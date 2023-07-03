@@ -47,10 +47,10 @@ function ca_update(grid, rules, kernel)
   return new_grid
 end
 
-function new_universe(size::Int64)
+function new_universe(size, threshhold=0.5)
   universe = rand(Float16, size, size)
-  universe[universe.>0.5] .= 1
-  universe[universe.<=0.5] .= 0
+  universe[universe.>threshhold] .= 1
+  universe[universe.<=threshhold] .= 0
   universe
 end
 
@@ -60,8 +60,8 @@ function moore_kernel()
   kernel
 end
 
-function complexity_procession_of(born, live, steps::Int64=256, size::Int64=100)
-  universe = new_universe(size)
+function complexity_procession_of(born, live, steps::Int64=256, size::Int64=100, threshhold=0.5)
+  universe = new_universe(size, threshhold)
   kernel = moore_kernel()
 
   complexities = []
@@ -76,8 +76,19 @@ function complexity_procession_of(born, live, steps::Int64=256, size::Int64=100)
   complexities
 end
 
-function save_run(born::Array{Int8}, live::Array{Int8}, steps::Int64=256, size=100)
-  universe = new_universe(size)
+function column_averages(data)
+  num_columns = length(data[1])
+  averages = [mean([row[i] for row in data]) for i in 1:num_columns]
+  return averages
+end
+
+function avg_complexity_procession_of(born, live, steps::Int64=256, size::Int64=100, threshhold=0.5, runs=10)
+  cs = [complexity_procession_of(born, live, steps, size, threshhold) for _ in 1:runs]
+  column_averages(cs)
+end
+
+function save_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
+  universe = new_universe(size, threshhold)
   name_prefix = "b" * join(born, "") * "s" * join(live, "")
   kernel = moore_kernel()
 
@@ -87,3 +98,12 @@ function save_run(born::Array{Int8}, live::Array{Int8}, steps::Int64=256, size=1
     universe = ca_update(universe, [born, live], kernel)
   end
 end
+
+function plot_run(born, live, steps, size)
+  threshholds = 0:0.1:1
+  cs = [avg_complexity_procession_of(born, live, steps, size, threshhold) for threshhold in threshholds]
+
+  plot(cs)
+end
+
+plot_run([0, 1, 2, 3, 6, 8], [1, 2, 3, 6], 100, 256)
