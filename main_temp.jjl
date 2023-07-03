@@ -1,7 +1,7 @@
 using NNlib
 using ImageView
 using Gtk
-using Plots
+using PyPlot
 using PNGFiles
 using BenchmarkTools
 
@@ -47,39 +47,13 @@ function ca_update(grid, rules, kernel)
   return new_grid
 end
 
-function new_universe(size::Int64)
+function save_run(born::Array{Int8}, live::Array{Int8}, steps::Int64=256, size=100)
   universe = rand(Float16, size, size)
   universe[universe.>0.5] .= 1
   universe[universe.<=0.5] .= 0
-  universe
-end
-
-function moore_kernel()
+  name_prefix = "b" * join(born, "") * "s" * join(live, "")
   kernel = ones(Float16, 3, 3)
   kernel[2, 2] = 0
-  kernel
-end
-
-function complexity_procession_of(born, live, steps::Int64=256, size::Int64=100)
-  universe = new_universe(size)
-  kernel = moore_kernel()
-
-  complexities = []
-
-  for _ = 1:steps
-    buf = IOBuffer()
-    PNGFiles.save(buf, universe)
-    append!(complexities, length(take!(buf)))
-    universe = ca_update(universe, [born, live], kernel)
-  end
-
-  complexities
-end
-
-function save_run(born::Array{Int8}, live::Array{Int8}, steps::Int64=256, size=100)
-  universe = new_universe(size)
-  name_prefix = "b" * join(born, "") * "s" * join(live, "")
-  kernel = moore_kernel()
 
   for step = 1:steps
     fname = name_prefix * "_step_" * string(step) * ".png"
