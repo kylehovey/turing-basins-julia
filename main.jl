@@ -1,7 +1,8 @@
 using NNlib
 using ImageView
 using Gtk
-using Plots
+using PlotlyJS
+using DataFrames
 using PNGFiles
 using BenchmarkTools
 
@@ -99,11 +100,16 @@ function save_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
   end
 end
 
-function plot_run(born, live, steps, size)
-  threshholds = 0:0.1:1
-  cs = [avg_complexity_procession_of(born, live, steps, size, threshhold) for threshhold in threshholds]
+function plot_run(born, live, steps, size, dthresh, averages)
+  threshholds = 0:dthresh:1
+  cs = [avg_complexity_procession_of(born, live, steps, size, threshhold, averages) for threshhold in threshholds]
 
-  plot(cs)
+  PlotlyJS.plot(surface(z=cs))
 end
 
-plot_run([0, 1, 2, 3, 6, 8], [1, 2, 3, 6], 100, 256)
+# plot_run([3], [2, 3], 100, 100, 0.05)
+# seeds # plot_run([2], [], 256, 100, 0.01)
+# anneal # plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.02, 5)
+# surprise # plot_run(5:8, 5:8, 100, 100, 0.05, 5)
+# day/night # plot_run([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.05, 5)
+plot_run([3, 6], [2, 3], 256, 100, 0.01)
