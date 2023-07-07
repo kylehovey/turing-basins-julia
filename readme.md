@@ -35,7 +35,6 @@ flowchart TD
   ConvertToNp --> RulesFileNp
 
   DataFileNp --> GenerateEmbedding
-  RulesFileNp --> GenerateEmbedding
 
   GenerateEmbedding --> EmbeddingFile
   GenerateEmbedding --> AverageDiffs

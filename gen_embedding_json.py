@@ -3,9 +3,9 @@ import numpy as np
 import json
 
 if __name__ == "__main__":
-    out_file = './initial_redux.json'
-    embedding = np.load('./initial_redux_embedding.npy')
-    target = np.load('./targets.npz.npy')
+    out_file = './embedding.json'
+    embedding = np.load('./embedding.npy')
+    target = np.load('./targets.npy')
     diffs = np.load('./average_diffs.npy')
 
     print (embedding.max(axis=0))
