@@ -4,7 +4,7 @@
 ## Data Pipeline
 
 ```mermaid
-flowchart LR
+flowchart TD
   Main(Main.jl)
 
   SaveToCSV(save_to_csv.jl)
