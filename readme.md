@@ -16,6 +16,8 @@ flowchart TD
   ConvertToNp(convert_to_npy)
   GenerateEmbedding(generate_plot.ipynb)
   GenerateJson(generate_embedding_json.py)
+  
+  RawData(raw.dat)
 
   DataFileJl(data.csv)
   RulesFileJl(targets.csv)
@@ -28,7 +30,9 @@ flowchart TD
   
   JsonEmbedding(embedding.json)
 
-  Main --> SaveToCSV
+  Main --> RawData
+  
+  RawData -> SaveToCSV
 
   SaveToCSV --> DataFileJl
   SaveToCSV --> RulesFileJl

@@ -147,7 +147,7 @@ end
 
 function generate_data(steps, size, dthresh, averages)
   rules = collect(all_rules())
-  fname = "./initial_redux.dat"
+  fname = "./raw.dat"
   out = []
 
   open(fname, "w") do io
@@ -161,7 +161,9 @@ function generate_data(steps, size, dthresh, averages)
   end
 end
 
-generate_data(50, 25, 0.2, 5)
+# current embedding # generate_data(50, 25, 0.2, 5)
+# new:
+generate_data(30, 30, 0.1, 20)
 
 # gol # plot_run([3], [2, 3], 50, 50, 0.2, 10)
 # plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 50, 50, 0.1, 10)

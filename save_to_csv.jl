@@ -18,7 +18,7 @@ function number_for(born, survive)
   out
 end
 
-open("initial_redux.dat") do io
+open("raw.dat") do io
   data = deserialize(io)
 
   runs = hcat(map((t) -> vcat(t[3]...), data)...)
