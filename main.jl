@@ -2,9 +2,15 @@ using NNlib
 using ImageView
 using Gtk
 using PlotlyJS
+using PlotlyBase
 using DataFrames
 using PNGFiles
 using BenchmarkTools
+using IterTools
+using Serialization
+using ProgressMeter
+using Base.Threads
+using Distributed
 
 # Adapted from https://rivesunder.github.io/SortaSota/2021/09/27/faster_life_julia.html
 
@@ -67,10 +73,10 @@ function complexity_procession_of(born, live, steps::Int64=256, size::Int64=100,
 
   complexities = []
 
+  buf = IOBuffer()
   for _ = 1:steps
-    buf = IOBuffer()
     PNGFiles.save(buf, universe)
-    append!(complexities, length(take!(buf)))
+    append!(complexities, UInt16(length(take!(buf))))
     universe = ca_update(universe, [born, live], kernel)
   end
 
@@ -79,7 +85,7 @@ end
 
 function column_averages(data)
   num_columns = length(data[1])
-  averages = [mean([row[i] for row in data]) for i in 1:num_columns]
+  averages = [Float16(mean([row[i] for row in data])) for i in 1:num_columns]
   return averages
 end
 
@@ -100,16 +106,67 @@ function save_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
   end
 end
 
+function run_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
+  universe = new_universe(size, threshhold)
+  kernel = moore_kernel()
+
+  for _ = 1:steps
+    universe = ca_update(universe, [born, live], kernel)
+  end
+
+  length(universe)
+end
+
 function plot_run(born, live, steps, size, dthresh, averages)
   threshholds = 0:dthresh:1
   cs = [avg_complexity_procession_of(born, live, steps, size, threshhold, averages) for threshhold in threshholds]
 
+  # plot = PlotlyJS.plot(surface(z=cs))
+  #
+  # open("plot.html", "w") do io
+  #   PlotlyBase.to_html(io, plot.plot)
+  # end
   PlotlyJS.plot(surface(z=cs))
 end
 
-# plot_run([3], [2, 3], 100, 100, 0.05)
+function all_rules()
+  out = []
+
+  for n in 1:(2^9)
+    bits = [parse(Int, b) for b in bitstring(n)[end-9:end]]
+    append!(out, [[a for (a, b) in zip(0:8, bits) if b == 1]])
+  end
+
+  IterTools.product(out, out)
+end
+
+function generate_data_for(born, live, steps, size, dthresh, averages)
+  threshholds = 0:dthresh:1
+  [avg_complexity_procession_of(born, live, steps, size, threshhold, averages) for threshhold in threshholds]
+end
+
+function generate_data(steps, size, dthresh, averages)
+  rules = collect(all_rules())
+  fname = "./initial_redux.dat"
+  out = []
+
+  open(fname, "w") do io
+    @showprogress @distributed for (born, live) in rules
+      data = generate_data_for(born, live, steps, size, dthresh, averages)
+
+      append!(out, [(born, live, data)])
+    end
+
+    serialize(io, out)
+  end
+end
+
+generate_data(50, 25, 0.2, 5)
+
+# gol # plot_run([3], [2, 3], 50, 50, 0.2, 10)
+# plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 50, 50, 0.1, 10)
 # seeds # plot_run([2], [], 256, 100, 0.01)
 # anneal # plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.02, 5)
 # surprise # plot_run(5:8, 5:8, 100, 100, 0.05, 5)
 # day/night # plot_run([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.05, 5)
-plot_run([3, 6], [2, 3], 256, 100, 0.01)
+# plot_run([3], [2, 3, 8], 256, 100, 0.01, 10)
