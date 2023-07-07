@@ -133,7 +133,7 @@ function all_rules()
   out = []
 
   for n in 1:(2^9)
-    bits = [parse(Int, b) for b in bitstring(n)[end-9:end]]
+    bits = [parse(Int, b) for b in bitstring(n)[end-8:end]]
     append!(out, [[a for (a, b) in zip(0:8, bits) if b == 1]])
   end
 
@@ -161,7 +161,7 @@ function generate_data(steps, size, dthresh, averages)
   end
 end
 
-generate_data(50, 25, 0.2, 5)
+# generate_data(50, 25, 0.2, 5)
 
 # gol # plot_run([3], [2, 3], 50, 50, 0.2, 10)
 # plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 50, 50, 0.1, 10)
