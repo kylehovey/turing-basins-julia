@@ -32,7 +32,7 @@ flowchart TD
 
   Main --> RawData
   
-  RawData -> SaveToCSV
+  RawData --> SaveToCSV
 
   SaveToCSV --> DataFileJl
   SaveToCSV --> RulesFileJl
@@ -55,3 +55,9 @@ flowchart TD
 
   GenerateJson --> JsonEmbedding
 ```
+
+## Ideas
+* What would each embedding look like if we used the original technique (constant initial probability) and generated one for each initial value? This might make a cool animation.
+
+## Problems
+* Game of Life (b3s23) has similar behavior at many points to another rule (b3s238), but they are pretty far away in this new embedding. Is there some way to make a better embedding where these are closer? Or are we at the limit of this technique?
