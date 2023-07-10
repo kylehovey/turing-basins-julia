@@ -10,10 +10,10 @@ This version of the project runs multiple trials given different stochastic init
 
 ```mermaid
 flowchart TD
-  Main(Main.jl)
+  Main(main.jl)
 
   SaveToCSV(save_to_csv.jl)
-  ConvertToNp(convert_to_npy)
+  ConvertToNp(convert_to_npy.py)
   GenerateEmbedding(generate_plot.ipynb)
   GenerateJson(generate_embedding_json.py)
   
