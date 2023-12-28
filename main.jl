@@ -94,13 +94,17 @@ function avg_complexity_procession_of(born, live, steps::Int64=256, size::Int64=
   column_averages(cs)
 end
 
+function name_for(born, live)
+  "b" * join(born, "") * "s" * join(live, "")
+end
+
 function save_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
   universe = new_universe(size, threshhold)
-  name_prefix = "b" * join(born, "") * "s" * join(live, "")
+  name_prefix = name_for(born, live)
   kernel = moore_kernel()
 
   for step = 1:steps
-    fname = name_prefix * "_step_" * string(step) * ".png"
+    fname = "saved/" * name_prefix * "_step_" * string(step) * ".png"
     PNGFiles.save(fname, universe)
     universe = ca_update(universe, [born, live], kernel)
   end
@@ -117,17 +121,50 @@ function run_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
   length(universe)
 end
 
-function plot_run(born, live, steps, size, dthresh, averages)
+function plot_run(born, live, steps, size, dthresh, averages; save_png=false)
   threshholds = 0:dthresh:1
+  y_values = [i for i in 1:length(threshholds)]
   cs = [avg_complexity_procession_of(born, live, steps, size, threshhold, averages) for threshhold in threshholds]
 
-  # plot = PlotlyJS.plot(surface(z=cs))
-  #
-  # open("plot.html", "w") do io
-  #   PlotlyBase.to_html(io, plot.plot)
-  # end
-  PlotlyJS.plot(surface(z=cs))
+  y_axis_scale = map(y -> "$(round(100 * (1 - (y - 1) / (length(threshholds) - 1)), digits=2))%", y_values)
+  name = name_for(born, live)
+
+  layout = Layout(
+    title="Entropy Progression - $(name)",
+    scene=attr(
+      xaxis_title="Time Step",
+      yaxis_title="Initial Probability of Life",
+      zaxis_title="Bytes",
+      yaxis=attr(
+        tickvals=y_values,
+        ticktext=y_axis_scale
+      ),
+      # Adjust the camera's eye position
+      camera=attr(
+        eye=attr(x=1.8, y=1.8, z=1.8)
+      )
+    )
+  )
+
+  plot = PlotlyJS.plot(surface(z=cs, x=1:steps, y=y_values), layout)
+
+  if save_png
+    png_filename = "$(name)_entropy_plot.png"
+    PlotlyJS.savefig(plot, png_filename)
+    println("Plot saved as '$png_filename'.")
+  end
+
+  if !save_png
+    return plot
+  end
 end
+
+function avg_complexity_procession_of(born, live, steps, size, threshhold, averages)
+  return rand(steps, size) # Your actual function implementation
+end
+
+# To call the function and save as PNG, use:
+# plot_run(3, 3, 10, 10, 0.1, 5, save_png=true)
 
 function all_rules()
   out = []
@@ -140,19 +177,42 @@ function all_rules()
   IterTools.product(out, out)
 end
 
-function generate_data_for(born, live, steps, size, dthresh, averages)
-  threshholds = 0:dthresh:1
-  [avg_complexity_procession_of(born, live, steps, size, threshhold, averages) for threshhold in threshholds]
+# Original version of experiment with static 50/50 initial conditions
+function generate_static_data_for(born, live, steps, size, averages)
+  # Data is still "2D" but there is only one row
+  [avg_complexity_procession_of(born, live, steps, size, 0.5, averages)]
 end
 
-function generate_data(steps, size, dthresh, averages)
+function generate_static_data(steps, size, averages)
   rules = collect(all_rules())
   fname = "./raw.dat"
   out = []
 
   open(fname, "w") do io
     @showprogress @distributed for (born, live) in rules
-      data = generate_data_for(born, live, steps, size, dthresh, averages)
+      data = generate_static_data_for(born, live, steps, size, averages)
+
+      append!(out, [(born, live, data)])
+    end
+
+    serialize(io, out)
+  end
+end
+
+# Second version of experiment with varied initial conditions
+function generate_varied_data_for(born, live, steps, size, dthresh, averages)
+  threshholds = 0:dthresh:1
+  [avg_complexity_procession_of(born, live, steps, size, threshhold, averages) for threshhold in threshholds]
+end
+
+function generate_varied_data(steps, size, dthresh, averages)
+  rules = collect(all_rules())
+  fname = "./raw.dat"
+  out = []
+
+  open(fname, "w") do io
+    @showprogress @distributed for (born, live) in rules
+      data = generate_varied_data_for(born, live, steps, size, dthresh, averages)
 
       append!(out, [(born, live, data)])
     end
@@ -162,13 +222,22 @@ function generate_data(steps, size, dthresh, averages)
 end
 
 # current embedding # generate_data(50, 25, 0.2, 5)
-# new:
-generate_data(30, 30, 0.1, 20)
 
-# gol # plot_run([3], [2, 3], 50, 50, 0.2, 10)
+# For first data in paper:
+# generate_static_data(100, 30, 10)
+
+# For second data in paper:
+# generate_varied_data(50, 25, 0.2, 10)
+
+# save_run([1, 2, 6], [1, 2, 3, 5, 6, 7, 8], 10, 100)
+
+# gol
+plot_run([3], [2, 3], 50, 100, 0.1, 20, save_png=true)
 # plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 50, 50, 0.1, 10)
 # seeds # plot_run([2], [], 256, 100, 0.01)
-# anneal # plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.02, 5)
-# surprise # plot_run(5:8, 5:8, 100, 100, 0.05, 5)
+# anneal
+# plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.01, 5)
+# surprise
+# plot_run(5:8, 5:8, 100, 25, 0.1, 20)
 # day/night # plot_run([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.05, 5)
-# plot_run([3], [2, 3, 8], 256, 100, 0.01, 10)
+# plot_run([3], [2, 3, 8], 50, 25, 0.2, 10)
