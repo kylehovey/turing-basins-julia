@@ -14,6 +14,8 @@ Data and graphics will all output in the `generated` directory with unique gener
 
 **Note:** When generating data, make sure to start up Julia with multiple threads as the REPL defaults to only one thread. You can do this with invoking the REPL with the argument `julia --threads=8` (change thread count to whatever works for your system).
 
+For Python requirements, create a `conda` environment using `conda-requirements.txt` with `conda create --name turing-basins --file conda-requirements.txt`. Once that is set up, activate the environment and then run `jupyter notebook` in this project directory. You can open up the notebook then and generate the embedding and scatterplot.
+
 ## Data Pipeline
 
 ```mermaid
