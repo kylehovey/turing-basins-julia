@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Define the directory containing your images. Adjust this to your image directory path.
-image_directory="."
-border_color="black"
-border_width=3
+image_directory=$1
+border_color="gray"
+border_width=1
 
 # Initiate the ImageMagick convert command
 convert_cmd="convert"
@@ -35,6 +35,8 @@ convert_cmd="$convert_cmd \"$image_directory/$output_image\""
 
 # Execute the command
 eval $convert_cmd
+
+convert -append *_entropy_plot.png "$image_directory/$output_image" "$image_directory/$output_image"
 
 for img in "${sorted_files[@]}"; do
     rm $img
