@@ -254,7 +254,7 @@ function plot_run(born, live, steps, size, dthresh, averages; save_png=false)
 end
 
 # For first data in paper:
-generate_static_data(steps=100, size=30, averages=10)
+generate_static_data(steps=60, size=40, averages=20)
 
 # For second data in paper:
 # generate_varied_data(steps=50, size=25, averages=10, dthresh=0.2)
