@@ -143,7 +143,6 @@ function generate_varied_data(; steps, size, averages, dthresh)
   uid = uuid4()
   static_data_dir = data_dir_for("varied_initial_condition/$(metadir)/$(uid)")
   fname = "$(static_data_dir)/raw.dat"
-  fname = "./raw.dat"
   out = []
 
   open(fname, "w") do io
