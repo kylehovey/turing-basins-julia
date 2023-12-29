@@ -116,7 +116,7 @@ Data generation
 =#
 
 # Original version of experiment with static 50/50 initial conditions
-function generate_static_data(steps, size, averages, threshhold=0.5)
+function generate_static_data(; steps, size, averages, threshhold=0.5)
   rules = collect(all_rules())
   metadir = "steps-$(steps)_size-$(size)_averages-$(averages)_threshhold-$(threshhold)"
   uid = uuid4()
@@ -254,14 +254,14 @@ function plot_run(born, live, steps, size, dthresh, averages; save_png=false)
 end
 
 # For first data in paper:
-# generate_static_data(10, 15, 1)
+generate_static_data(steps=100, size=30, averages=10)
 
 # For second data in paper:
 # generate_varied_data(50, 25, 10, 0.2)
 
 # save_run([3], [2, 3], 10, 70)
 
-plot_run([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
+# plot_run([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
 
 # gol
 # plot_run([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
