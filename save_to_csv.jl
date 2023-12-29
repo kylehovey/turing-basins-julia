@@ -28,6 +28,6 @@ open("$(data_directory)/raw.dat") do io
   runs = hcat(map((t) -> vcat(t[3]...), data)...)
   rules = hcat(map((t) -> number_for(t[1], t[2]), data)...)
 
-  CSV.write("data.csv", Tables.table(runs))
-  CSV.write("targets.csv", Tables.table(rules))
+  CSV.write("$(data_directory)/data.csv", Tables.table(runs))
+  CSV.write("$(data_directory)/targets.csv", Tables.table(rules))
 end
