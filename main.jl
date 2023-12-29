@@ -189,7 +189,7 @@ function avg_complexity_procession_of(born, live, steps::Int64=256, size::Int64=
 end
 
 # Save an example run of a given rule as individual PNG files
-function save_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
+function render_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
   universe = new_universe(size, threshhold)
   kernel = moore_kernel()
   metadir = "steps-$(steps)_size-$(size)_threshhold-$(threshhold)"
@@ -204,7 +204,7 @@ function save_run(born, live, steps::Int64=256, size=100, threshhold=0.5)
 end
 
 # Generate a surface plot of complexity over time for various initial conditions
-function plot_run(born, live, steps, size, dthresh, averages; save_png=false)
+function surface_plot_for(born, live, steps, size, dthresh, averages; save_png=false)
   threshholds = 0:dthresh:1
   y_values = [i for i in 1:length(threshholds)]
   cs = [avg_complexity_procession_of(born, live, steps, size, threshhold, averages) for threshhold in threshholds]
@@ -258,18 +258,18 @@ end
 # For second data in paper:
 generate_varied_data(steps=60, size=40, averages=20, dthresh=0.2)
 
-# save_run([3], [2, 3], 10, 70)
+# render_run([3], [2, 3], 10, 70)
 
-# plot_run([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
+# surface_plot_for([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
 
 # gol
-# plot_run([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
-# seeds # plot_run([2], [], 256, 100, 0.01)
+# surface_plot_for([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
+# seeds # surface_plot_for([2], [], 256, 100, 0.01)
 # anneal
-# plot_run([4, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.01, 5)
+# surface_plot_for([4, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.01, 5)
 # surprise
-# plot_run(5:8, 5:8, 100, 25, 0.1, 20)
+# surface_plot_for(5:8, 5:8, 100, 25, 0.1, 20)
 # day/night
-# plot_run([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.05, 5)
+# surface_plot_for([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.05, 5)
 # unknown
-# plot_run([3], [2, 3, 8], 50, 25, 0.2, 10)
+# surface_plot_for([3], [2, 3, 8], 50, 25, 0.2, 10)

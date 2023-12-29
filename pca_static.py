@@ -2,6 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
+'''
+Use this file for generating PCA charts treating dataset as 1D vectors. For
+varied initial condition data, the slices will be concatenated into a single
+vector and you will see the slices in the PCA's that are found. To get a better
+representation, generate a surface plot of the PCA's for varied initial conditions.
+'''
+
 # Change to the currently active data directory
 data_directory = "CHANGEME"
 
