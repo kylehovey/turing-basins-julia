@@ -137,7 +137,7 @@ function generate_static_data(; steps, size, averages, threshhold=0.5)
 end
 
 # Second version of experiment with varied initial conditions
-function generate_varied_data(steps, size, averages, dthresh)
+function generate_varied_data(; steps, size, averages, dthresh)
   rules = collect(all_rules())
   metadir = "steps-$(steps)_size-$(size)_dthresh-$(dthresh)"
   uid = uuid4()
@@ -257,7 +257,7 @@ end
 generate_static_data(steps=100, size=30, averages=10)
 
 # For second data in paper:
-# generate_varied_data(50, 25, 10, 0.2)
+# generate_varied_data(steps=50, size=25, averages=10, dthresh=0.2)
 
 # save_run([3], [2, 3], 10, 70)
 
