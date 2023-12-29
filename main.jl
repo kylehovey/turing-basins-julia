@@ -141,7 +141,7 @@ function generate_varied_data(; steps, size, averages, dthresh)
   rules = collect(all_rules())
   metadir = "steps-$(steps)_size-$(size)_dthresh-$(dthresh)"
   uid = uuid4()
-  static_data_dir = data_dir_for("static_initial_condition/$(metadir)/$(uid)")
+  static_data_dir = data_dir_for("varied_initial_condition/$(metadir)/$(uid)")
   fname = "$(static_data_dir)/raw.dat"
   fname = "./raw.dat"
   out = []
@@ -254,10 +254,10 @@ function plot_run(born, live, steps, size, dthresh, averages; save_png=false)
 end
 
 # For first data in paper:
-generate_static_data(steps=60, size=40, averages=20)
+# generate_static_data(steps=60, size=40, averages=20)
 
 # For second data in paper:
-# generate_varied_data(steps=50, size=25, averages=10, dthresh=0.2)
+generate_varied_data(steps=60, size=40, averages=20, dthresh=0.2)
 
 # save_run([3], [2, 3], 10, 70)
 
