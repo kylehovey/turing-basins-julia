@@ -6,6 +6,14 @@
 
 This version of the project runs multiple trials given different stochastic initial conditions, then re-runs UMAP clustering to see what structure emerges. The output of the data pipeline here is a JSON file that can be put into [the explorer](http://kylehovey.github.io/automata-nebula-explorer/index.html) if you clone the project and run it locally.
 
+## Running Project Locally
+
+For generating data or graphics, I use the Julia REPL. `cd` into this project, fire up `julia` then type `]` to get to the package prompt. Type `activate .` to activate the project, then hit backspace to return to the Julia REPL. Open up `main.jl` in your IDE of choice and go to the bottom of the file. I have some example functions down there that I used to generate data and graphics.
+
+Data and graphics will all output in the `generated` directory with unique generated paths that include metadata about what was generated in the path. Maybe in the future all of these functions and metadata could be command line arguments or a TUI, and the output metadata could be YAML. For now, this provides enough utility for me while also allowing me to edit the functionality of the methods easily at the same time.
+
+**Note:** When generating data, make sure to start up Julia with multiple threads as the REPL defaults to only one thread. You can do this with invoking the REPL with the argument `julia --threads=8` (change thread count to whatever works for your system).
+
 ## Data Pipeline
 
 ```mermaid
