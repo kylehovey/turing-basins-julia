@@ -1,6 +1,11 @@
 using Serialization
 using CSV
 using Tables
+using DotEnv
+
+DotEnv.config()
+
+data_directory = ENV["DATA_DIR"]
 
 # Encode rule as an integer using binary representation
 # (used in React data explorer project)
@@ -18,9 +23,6 @@ function number_for(born, survive)
 
   out
 end
-
-# Change to the currently active data directory
-data_directory = "CHANGEME"
 
 open("$(data_directory)/raw.dat") do io
   data = deserialize(io)

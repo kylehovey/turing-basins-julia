@@ -1,9 +1,10 @@
-from tqdm import tqdm
 import numpy as np
 import json
+from dotenv import dotenv_values
 
-# Change to the currently active data directory
-data_directory = "CHANGEME"
+config = dotenv_values(".env")
+
+data_directory = config["DATA_DIR"]
 
 if __name__ == "__main__":
     out_file = '{}/embedding.json'.format(data_directory)

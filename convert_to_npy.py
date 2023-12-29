@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
+from dotenv import dotenv_values
 
-# Change to the currently active data directory
-data_directory = "CHANGEME"
+config = dotenv_values(".env")
+
+data_directory = config["DATA_DIR"]
 
 print("Loading data...")
 data = np.array(pd.read_csv("{}/data.csv".format(data_directory))).T
