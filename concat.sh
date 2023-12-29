@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define the directory containing your images. Adjust this to your image directory path.
+# Define the directory containing your images.
 image_directory=$1
 border_color="gray"
 border_width=1
@@ -38,6 +38,7 @@ eval $convert_cmd
 
 convert -append *_entropy_plot.png "$image_directory/$output_image" "$image_directory/$output_image"
 
+# Clean up images
 for img in "${sorted_files[@]}"; do
     rm $img
 done

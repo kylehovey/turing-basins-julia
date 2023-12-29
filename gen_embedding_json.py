@@ -2,11 +2,14 @@ from tqdm import tqdm
 import numpy as np
 import json
 
+# Change to the currently active data directory
+data_directory = "CHANGEME"
+
 if __name__ == "__main__":
-    out_file = './embedding.json'
-    embedding = np.load('./embedding.npy')
-    target = np.load('./targets.npy')
-    diffs = np.load('./average_diffs.npy')
+    out_file = '{}/embedding.json'.format(data_directory)
+    embedding = np.load('{}/embedding.npy'.format(data_directory))
+    target = np.load('{}/targets.npy'.format(data_directory))
+    diffs = np.load('{}/average_diffs.npy'.format(data_directory))
 
     print (embedding.max(axis=0))
     print (embedding.min(axis=0))

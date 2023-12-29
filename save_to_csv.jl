@@ -2,6 +2,8 @@ using Serialization
 using CSV
 using Tables
 
+# Encode rule as an integer using binary representation
+# (used in React data explorer project)
 function number_for(born, survive)
   out = 0
   for i in 0:9
@@ -17,7 +19,10 @@ function number_for(born, survive)
   out
 end
 
-open("raw.dat") do io
+# Change to the currently active data directory
+data_directory = "CHANGEME"
+
+open("$(data_directory)/raw.dat") do io
   data = deserialize(io)
 
   runs = hcat(map((t) -> vcat(t[3]...), data)...)
