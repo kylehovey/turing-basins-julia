@@ -224,7 +224,7 @@ function avg_complexity_procession_of(born, live, steps::Int64=256, size::Int64=
     layout = Layout(
       title="Complexity/Entropy Procession - $(name)",
       xaxis=attr(title="Step"),
-      yaxis=attr(title="Complexity"),
+      yaxis=attr(title="Complexity (bytes)"),
       legend=attr(
         x=0.5,
         y=-0.2,
@@ -314,7 +314,7 @@ end
 # generate_varied_data(steps=50, size=30, averages=10, dthresh=0.2)
 
 # For high-resolution version
-generate_varied_data(steps=50, size=50, averages=20, dthresh=0.05)
+generate_varied_data(steps=30, size=40, averages=20, dthresh=0.05)
 
 # render_run([3], [2, 3], 10, 70)
 
