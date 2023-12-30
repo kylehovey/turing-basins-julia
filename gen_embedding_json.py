@@ -1,10 +1,6 @@
 import numpy as np
 import json
-from dotenv import dotenv_values
-
-config = dotenv_values(".env")
-
-data_directory = config["DATA_DIR"]
+from environment import data_directory
 
 if __name__ == "__main__":
     out_file = '{}/embedding.json'.format(data_directory)
