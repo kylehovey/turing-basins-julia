@@ -118,7 +118,7 @@ Data generation
 # Original version of experiment with static 50/50 initial conditions
 function generate_static_data(; steps, size, averages, threshhold=0.5)
   rules = collect(all_rules())
-  metadir = "steps-$(steps)_size-$(size)_averages-$(averages)_threshhold-$(threshhold)"
+  metadir = "steps-$(steps)_size-$(size)_averages-$(averages)_threshhold-$(threshhold)_averages-$(averages)"
   uid = uuid4()
   static_data_dir = data_dir_for("static_initial_condition/$(metadir)/$(uid)")
   fname = "$(static_data_dir)/raw.dat"
@@ -313,10 +313,13 @@ end
 # For second data in paper:
 # generate_varied_data(steps=50, size=30, averages=10, dthresh=0.2)
 
+# For high-resolution version
+generate_varied_data(steps=50, size=50, averages=20, dthresh=0.05)
+
 # render_run([3], [2, 3], 10, 70)
 
-avg_complexity_procession_of([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.5, 50, save_chart=true)
-surface_plot_for([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.2, 50, save_png=true)
+# avg_complexity_procession_of([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.5, 50, save_chart=true)
+# surface_plot_for([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.2, 50, save_png=true)
 
 # gol
 # surface_plot_for([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
