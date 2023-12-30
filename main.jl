@@ -183,9 +183,64 @@ function complexity_procession_of(born, live, steps::Int64=256, size::Int64=100,
 end
 
 # Run multiple universes and average out the complexity processions
-function avg_complexity_procession_of(born, live, steps::Int64=256, size::Int64=100, threshhold=0.5, runs=10)
-  cs = [complexity_procession_of(born, live, steps, size, threshhold) for _ in 1:runs]
-  [Float16(mean([row[i] for row in cs])) for i in 1:steps]
+function avg_complexity_procession_of(born, live, steps::Int64=256, size::Int64=100, threshhold=0.5, runs=10; save_chart=false)
+  # List of complexity processions, each of which is a list of floats
+  complexity_processions = [complexity_procession_of(born, live, steps, size, threshhold) for _ in 1:runs]
+
+  # The average of all of the runs
+  average_complexity_procession = [Float16(mean([row[i] for row in complexity_processions])) for i in 1:steps]
+
+  if save_chart
+    name = name_for(born, live)
+    metadir = "steps-$(steps)_size-$(size)_threshhold-$(threshhold)_runs-$(runs)"
+    graphics_dir = graphics_dir_for(born, live, "complexity_processions/$(metadir)")
+    uid = uuid4()
+    fname = "$(graphics_dir)/$(uid).png"
+
+    # Prepare trace for each complexity procession
+    traces = [
+      scatter(
+        x=1:steps,
+        y=cp,
+        mode="lines",
+        line=attr(color="gray", width=1),
+        showlegend=false
+      ) for cp in complexity_processions
+    ]
+
+    # Prepare trace for the average complexity procession
+    avg_trace = scatter(
+      x=1:steps,
+      y=average_complexity_procession,
+      mode="lines",
+      line=attr(color="blue", width=2),
+      name="Entropy (Average Complexity)"
+    )
+
+    # Combine all traces
+    traces = push!(traces, avg_trace)
+
+    # Plot the chart
+    layout = Layout(
+      title="Complexity/Entropy Procession - $(name)",
+      xaxis=attr(title="Step"),
+      yaxis=attr(title="Complexity"),
+      legend=attr(
+        x=0.5,
+        y=-0.2,
+        orientation="h",
+        xanchor="center",
+        yanchor="top"
+      ),
+      showlegend=true
+    )
+    plt = plot(traces, layout)
+
+    # Save the file as fname
+    PlotlyJS.savefig(plt, fname, width=1000, height=500)
+  end
+
+  average_complexity_procession
 end
 
 # Save an example run of a given rule as individual PNG files
@@ -218,7 +273,7 @@ function surface_plot_for(born, live, steps, size, dthresh, averages; save_png=f
   margin = 40
 
   layout = Layout(
-    title="Entropy Progression - $(name)",
+    title="Entropy Procession - $(name)",
     showlegend=false,
     scene=attr(
       xaxis_title="Time Step",
@@ -256,11 +311,12 @@ end
 # generate_static_data(steps=60, size=40, averages=20)
 
 # For second data in paper:
-generate_varied_data(steps=60, size=40, averages=20, dthresh=0.2)
+# generate_varied_data(steps=50, size=30, averages=10, dthresh=0.2)
 
 # render_run([3], [2, 3], 10, 70)
 
-# surface_plot_for([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
+avg_complexity_procession_of([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.5, 50, save_chart=true)
+surface_plot_for([3, 6, 7, 8], [3, 5, 6, 7, 8], 100, 100, 0.2, 50, save_png=true)
 
 # gol
 # surface_plot_for([3], [2, 3], 50, 100, 0.2, 20, save_png=true)
