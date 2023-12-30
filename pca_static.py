@@ -20,6 +20,8 @@ print(f"Loaded data of shape {data.shape}")
 
 (_, n_components) = np.shape(data)
 
+n_components = min(100, n_components)
+
 pca = PCA(n_components=n_components)
 pca.fit(data)
 
