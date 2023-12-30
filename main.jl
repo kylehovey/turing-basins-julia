@@ -118,7 +118,7 @@ Data generation
 # Original version of experiment with static 50/50 initial conditions
 function generate_static_data(; steps, size, averages, threshhold=0.5)
   rules = collect(all_rules())
-  metadir = "steps-$(steps)_size-$(size)_averages-$(averages)_threshhold-$(threshhold)_averages-$(averages)"
+  metadir = "steps-$(steps)_size-$(size)_threshhold-$(threshhold)_averages-$(averages)"
   uid = uuid4()
   static_data_dir = data_dir_for("static_initial_condition/$(metadir)/$(uid)")
   fname = "$(static_data_dir)/raw.dat"
@@ -139,7 +139,7 @@ end
 # Second version of experiment with varied initial conditions
 function generate_varied_data(; steps, size, averages, dthresh)
   rules = collect(all_rules())
-  metadir = "steps-$(steps)_size-$(size)_dthresh-$(dthresh)"
+  metadir = "steps-$(steps)_size-$(size)_dthresh-$(dthresh)_averages-$(averages)"
   uid = uuid4()
   static_data_dir = data_dir_for("varied_initial_condition/$(metadir)/$(uid)")
   fname = "$(static_data_dir)/raw.dat"
