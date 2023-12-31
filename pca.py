@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from environment import data_directory, params
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import os
 
 '''
@@ -69,55 +70,97 @@ plt.tight_layout()
 # Display the plots
 plt.savefig(f"{data_directory}/pca.png")
 
-def save_surface_plots(pca, pca_display_count, nrows, ncols, output_dir):
+def save_surface_plot_grid(pca, nrows, ncols, output_dir):
     y = np.linspace(0, 1, nrows)  # We assume the y-axis ranges from 0 to 1
-    # Calculate percentages for y-axis scale
-    y_percentages = ["{:.2f}%".format(100 * yi) for yi in y]
+    y_percentages = list(reversed(["{:.2f}%".format(100 * yi) for yi in y]))
     x = np.linspace(1, ncols, ncols)
     X, Y = np.meshgrid(x, y)
+    
+    # Define the number of rows and columns for the subplot grid
+    grid_rows = 3
+    grid_cols = 3
+    subplot_titles = [f"PC {i+1}" for i in range(grid_rows * grid_cols)]
 
-    for i in range(pca_display_count):
+    # Initialize subplots
+    fig = make_subplots(
+        rows=grid_rows, cols=grid_cols,
+        specs=[[{'type': 'surface'}] * grid_cols] * grid_rows,  # All plots are of type 'surface'
+        subplot_titles=subplot_titles,
+        vertical_spacing=0.02,
+        horizontal_spacing=0.02,
+    )
+
+    # Populate the subplots with surface plots of PCA components
+    for i in range(grid_rows * grid_cols):
         pc_reshaped = pca.components_[i].reshape((nrows, ncols))
         Z = pc_reshaped
-        
-        fig = go.Figure(data=[go.Surface(z=Z, x=X, y=Y)])
-        
-        fig.update_layout(
-            title=f"PC {i+1} - Surface Plot",
-            autosize=True,
-            width=1000,
-            height=1000,
+
+        row = (i // grid_cols) + 1
+        col = (i % grid_cols) + 1
+
+        fig.add_trace(
+            go.Surface(z=Z, x=X, y=Y, showscale=False, name=f"PC {i+1}"),
+            row=row, col=col
+        )
+
+    # Update layout and camera for all subplots
+    for i in range(1, grid_rows * grid_cols + 1):
+        fig.update_scenes(
+            xaxis_title="Principal Component Index",
+            yaxis=dict(
+                title="Initial Probability of Life",
+                tickvals=y,
+                ticktext=y_percentages
+            ),
+            zaxis_title="Z Value",
+            camera=dict(
+                eye=dict(x=1.5, y=1.5, z=2)
+            ),
+            row=(i - 1) // grid_cols + 1, col=(i - 1) % grid_cols + 1
+        )
+
+    # Update the layout for the entire figure with reduced margins and increased font size
+    fig.update_layout(
+        title_text="<b>Principal Component Surface Plots</b>",  # Bold main title
+        title_font_size=24,
+        autosize=True,
+        width=900 * grid_cols,
+        height=800 * grid_rows,
+        margin=dict(l=40, r=40, b=40, t=90)
+    )
+
+    # Save the plot as a PNG file
+    png_filename = os.path.join(output_dir, "PCA_surface_plot_grid.png")
+    fig.write_image(png_filename)
+    print(f"Surface plot grid saved as '{png_filename}'.")
+
+    # Save individual surface plots for each principal component
+    for i in range(grid_rows * grid_cols):
+        pc_reshaped = pca.components_[i].reshape((nrows, ncols))
+        single_fig = go.Figure(data=[go.Surface(z=pc_reshaped, x=X, y=Y, showscale=False)])
+        single_fig.update_layout(
+            title=f"Principal Component {i+1}",
             scene=dict(
-                xaxis=dict(
-                    title="Principal Component Index",
-                ),
+                xaxis_title="Principal Component Index",
                 yaxis=dict(
                     title="Initial Probability of Life",
                     tickvals=y,
                     ticktext=y_percentages
                 ),
-                zaxis=dict(
-                    title="Z Value",
-                ),
-                camera=dict(
-                    eye=dict(x=2, y=2, z=2)  # Adjust the camera's eye position
-                ),
-                aspectratio=dict(x=1, y=1, z=1),  # Keep the aspect ratio square
+                zaxis_title="Z Value",
+                camera=dict(eye=dict(x=1.5, y=1.5, z=1.5)),
+                aspectratio=dict(x=1, y=1, z=1),
             ),
+            autosize=True,
+            width=700,
+            height=700,
             margin=dict(l=40, r=40, b=40, t=90)
         )
-
-        # Save the plot as a PNG file
-        png_filename = os.path.join(output_dir, f"PC_{i+1}_surface_plot.png")
-        fig.write_image(png_filename)
-        print(f"Surface plot saved as '{png_filename}'.")
+        
+        # Save the individual principal component plot as a PNG file
+        pc_png_filename = os.path.join(output_dir, f"PC_{i+1}_surface_plot.png")
+        single_fig.write_image(pc_png_filename)
+        print(f"Individual surface plot saved as '{pc_png_filename}'.")
 
 if params['n_initial_conditions'] > 1:
-    dthresh = 1.0 / (params['n_initial_conditions'] - 1)  # adjust based on your data
-    save_surface_plots(
-        pca,
-        pca_display_count,
-        nrows=params['n_initial_conditions'],
-        ncols=params['steps'],
-        output_dir=data_directory,
-    )
+    save_surface_plot_grid(pca, nrows=params['n_initial_conditions'], ncols=params['steps'], output_dir=data_directory)
