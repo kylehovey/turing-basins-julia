@@ -37,7 +37,7 @@ ax[0].plot(pca.explained_variance_, label='Explained Variance', color='blue')
 ax[0].set_yscale('log')
 ax[0].set_xlabel('Principal Component Index')
 ax[0].set_ylabel('Explained Variance (log scale)')
-ax[0].set_title('Explained Variance by Principal Components')
+ax[0].set_title(f'Explained Variance by Principal Components - P(life)={params["threshhold"]}')
 ax[0].legend()
 
 # Enable horizontal grid lines for the first subplot
